@@ -4,19 +4,22 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.annotations.jaxrs.PathParam;
+
 
 import cnam.medical.pacs.domain.dao.PatientRepo;
 import cnam.medical.pacs.domain.model.Patient;
@@ -43,11 +46,14 @@ public class PatientUI {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/id/{id}")
-    public Patient getPatient(@PathParam Long id){
+    public Patient getPatient(@PathParam("id") Long id) {
 
 
         LOGGER.info("Get Patient by id");
-        return patientRepo.findById(id);
+        
+        Patient patient=patientRepo.findById(id);
+
+        return patientRepo.findById(id);//Response.status(Status.OK).entity(patient).build();
 
     }
 
@@ -55,7 +61,7 @@ public class PatientUI {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/lastname/{lastname}")
-    public List<Patient> getPatientByLastName(@PathParam String lastname){
+    public List<Patient> getPatientByLastName(@PathParam("lastname") String lastname){
 
         LOGGER.info("Get Patients by lastname");
         return patientRepo.findByLastName(lastname);
@@ -67,7 +73,7 @@ public class PatientUI {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/firstname/{firstname}")
-    public List<Patient> getPatientByFirstName(@PathParam String firstname){
+    public List<Patient> getPatientByFirstName(@PathParam("firstname") String firstname){
 
         LOGGER.info("Get Patients by firstname");
         return patientRepo.findByFirstName(firstname);
@@ -77,7 +83,7 @@ public class PatientUI {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/sex/{sex}")
-    public List<Patient> getPatientBySex(@PathParam Sex sex){
+    public List<Patient> getPatientBySex(@PathParam("sex") Sex sex){
 
         LOGGER.info("Get Patients by sex");
         return patientRepo.findBySex(sex);
@@ -88,7 +94,7 @@ public class PatientUI {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/birth/{birth}")
-    public List<Patient> getPatientByBirth(@PathParam String birth){
+    public List<Patient> getPatientByBirth(@PathParam("birth") String birth){
 
 
         LOGGER.info("Get Patients by birthdate");
@@ -117,8 +123,23 @@ public class PatientUI {
 
 
 
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/{id}")
+    @Transactional
+    public Response deletePatient(@PathParam("id") Long id){
 
+        LOGGER.info("Delete Patient");
+        patientRepo.deleteById(id);
+        return Response.status(Status.OK).build();
+
+    }
 
  
 
+    
+
 }
+
+
