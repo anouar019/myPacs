@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
@@ -20,23 +19,22 @@ import javax.ws.rs.core.Response.Status;
 
 import org.jboss.logging.Logger;
 
-
 import cnam.medical.pacs.domain.dao.PatientRepo;
 import cnam.medical.pacs.domain.model.Patient;
 import cnam.medical.pacs.domain.model.Patient.Sex;
-
+import cnam.medical.pacs.exception.WrongArg;
 
 @Path("/patient")
 public class PatientUI {
 
-    private Logger LOGGER=Logger.getLogger(PatientUI.class);
+    private Logger LOGGER = Logger.getLogger(PatientUI.class);
 
     @Inject
     PatientRepo patientRepo;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Patient> getPatients(){
+    public List<Patient> getPatients() {
 
         LOGGER.info("Get List of Patients");
         return patientRepo.listAll();
@@ -46,34 +44,28 @@ public class PatientUI {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/id/{id}")
-    public Patient getPatient(@PathParam("id") Long id) {
-
+    public Response getPatient(@PathParam("id") Long id) {
 
         LOGGER.info("Get Patient by id");
-        
-        Patient patient=patientRepo.findById(id);
-
-        return patientRepo.findById(id);//Response.status(Status.OK).entity(patient).build();
+        Patient patient = patientRepo.findById(id);
+        return Response.status(Status.OK).entity(patient).build();
 
     }
-
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/lastname/{lastname}")
-    public List<Patient> getPatientByLastName(@PathParam("lastname") String lastname){
+    public List<Patient> getPatientByLastName(@PathParam("lastname") String lastname) {
 
         LOGGER.info("Get Patients by lastname");
         return patientRepo.findByLastName(lastname);
 
     }
 
-
-
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/firstname/{firstname}")
-    public List<Patient> getPatientByFirstName(@PathParam("firstname") String firstname){
+    public List<Patient> getPatientByFirstName(@PathParam("firstname") String firstname) {
 
         LOGGER.info("Get Patients by firstname");
         return patientRepo.findByFirstName(firstname);
@@ -83,29 +75,34 @@ public class PatientUI {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/sex/{sex}")
-    public List<Patient> getPatientBySex(@PathParam("sex") Sex sex){
+    public List<Patient> getPatientBySex(@PathParam("sex") Sex sex) {
 
         LOGGER.info("Get Patients by sex");
         return patientRepo.findBySex(sex);
 
     }
-    
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/birth/{birth}")
-    public List<Patient> getPatientByBirth(@PathParam("birth") String birth){
+    public List<Patient> getPatientByBirth(@PathParam("birth") String birth) throws WrongArg {
 
+        LOGGER.info("Get Patients by birthdate: " + birth);
 
-        LOGGER.info("Get Patients by birthdate");
-
-        //convert String to LocalDate
+        // convert String to LocalDate
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-d");
-        LocalDate localDate = LocalDate.parse(birth, formatter);
-        
-        return patientRepo.findByBirth(localDate);
-        
+        LocalDate localDate = null;
 
+        try {
+            localDate = LocalDate.parse(birth, formatter);
+        } catch (Exception e) {
+
+            LOGGER.info("Exception parse date " + birth);
+            throw new WrongArg("Error in birth format: yyyy-MM-dd");
+
+        }
+
+        return patientRepo.findByBirth(localDate);
 
     }
 
@@ -113,7 +110,7 @@ public class PatientUI {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response savePatient(Patient patient){
+    public Response savePatient(Patient patient) {
 
         LOGGER.info("Post Patient");
         patientRepo.persist(patient);
@@ -121,14 +118,11 @@ public class PatientUI {
 
     }
 
-
-
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}")
     @Transactional
-    public Response deletePatient(@PathParam("id") Long id){
+    public Response deletePatient(@PathParam("id") Long id) {
 
         LOGGER.info("Delete Patient");
         patientRepo.deleteById(id);
@@ -136,10 +130,4 @@ public class PatientUI {
 
     }
 
- 
-
-    
-
 }
-
-
