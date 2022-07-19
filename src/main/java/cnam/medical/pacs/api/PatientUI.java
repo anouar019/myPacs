@@ -10,6 +10,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -32,6 +33,10 @@ public class PatientUI {
     @Inject
     PatientRepo patientRepo;
 
+    
+    /** 
+     * @return List<Patient>
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Patient> getPatients() {
@@ -41,6 +46,11 @@ public class PatientUI {
 
     }
 
+    
+    /** 
+     * @param id
+     * @return Response
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/id/{id}")
@@ -52,6 +62,11 @@ public class PatientUI {
 
     }
 
+    
+    /** 
+     * @param lastname
+     * @return List<Patient>
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/lastname/{lastname}")
@@ -62,6 +77,11 @@ public class PatientUI {
 
     }
 
+    
+    /** 
+     * @param firstname
+     * @return List<Patient>
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/firstname/{firstname}")
@@ -72,6 +92,11 @@ public class PatientUI {
 
     }
 
+    
+    /** 
+     * @param sex
+     * @return List<Patient>
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/sex/{sex}")
@@ -82,6 +107,12 @@ public class PatientUI {
 
     }
 
+    
+    /** 
+     * @param birth
+     * @return List<Patient>
+     * @throws WrongArg
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/birth/{birth}")
@@ -106,6 +137,11 @@ public class PatientUI {
 
     }
 
+    
+    /** 
+     * @param patient
+     * @return Response
+     */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -118,13 +154,44 @@ public class PatientUI {
 
     }
 
+    
+    /** 
+     * @param id
+     * @param patient
+     * @return Response
+     */
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/{id}")
+    @Transactional
+    public Response updatePatient(@PathParam("id") Long id, Patient patient){
+
+        LOGGER.info("Update Patient id: "+id);
+        Patient tempPatient= patientRepo.findById(id);
+        tempPatient.birth=patient.birth;
+        tempPatient.firstName=patient.firstName;
+        tempPatient.lastName=patient.lastName;
+        tempPatient.sex=patient.sex;
+        tempPatient.persist();
+
+        return Response.status(Status.OK).entity(tempPatient).build();
+
+
+    }
+
+    
+    /** 
+     * @param id
+     * @return Response
+     */
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id}")
     @Transactional
     public Response deletePatient(@PathParam("id") Long id) {
 
-        LOGGER.info("Delete Patient");
+        LOGGER.info("Delete Patient id: "+id);
         patientRepo.deleteById(id);
         return Response.status(Status.OK).build();
 

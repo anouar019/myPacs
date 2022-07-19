@@ -45,7 +45,7 @@ public class ProtocoleTest {
                 .header("Content-Type", "application/json")
                 .when()
                 .post("/protocole")
-                .then()
+                .then() 
                 .statusCode(201);
 
         // POST3
@@ -99,6 +99,60 @@ public class ProtocoleTest {
         "[2].type", is("MOU"),
         "[2].injection", is("OUI"));
     }
+
+
+    @Test
+        public void testPutPatient() {
+
+                // VERIFICATION
+                given()
+                .when().get("/protocole")
+                .then()
+                .statusCode(200).body("$.size()", is(3),
+                "[0].technique", is("SCANNER"),
+                "[0].membre", is("CRANE"),
+                "[0].type", is("MOU"),
+                "[0].injection", is("OUI"),
+                "[1].technique", is("RADIO"),
+                "[1].membre", is("TRONC"),
+                "[1].type", is("OS"),
+                "[1].injection", is("NON"),
+                "[2].technique", is("MEDECINE_NUCLEAIRE"),
+                "[2].membre", is("BRAS"),
+                "[2].type", is("MOU"),
+                "[2].injection", is("OUI"));
+
+                // PUT
+                given()
+                                .body("{\"id\": " + myLong
+                                                + " , \"technique\": \"RADIO\", \"membre\": \"TRONC\", \"type\": \"OS\", \"injection\": \"NON\", \"date\": \"2022-07-19T07:41:06.491Z[UTC]\"}")
+                                .header("Content-Type", "application/json")
+                                .when()
+                                .put("/protocole/" + myLong)
+                                .then()
+                                .statusCode(200);
+
+                                //"2022-07-19T07:41:06.491Z[UTC]"
+
+                // VERIFICATION2
+                given()
+                .when().get("/protocole")
+                .then()
+                .statusCode(200).body("$.size()", is(3),
+                "[0].technique", is("RADIO"),
+                "[0].membre", is("TRONC"),
+                "[0].type", is("OS"),
+                "[0].injection", is("NON"),
+                "[1].technique", is("RADIO"),
+                "[1].membre", is("TRONC"),
+                "[1].type", is("OS"),
+                "[1].injection", is("NON"),
+                "[2].technique", is("MEDECINE_NUCLEAIRE"),
+                "[2].membre", is("BRAS"),
+                "[2].type", is("MOU"),
+                "[2].injection", is("OUI"));
+        }
+
 
     @Test
     public void testDeleteProtocole() {

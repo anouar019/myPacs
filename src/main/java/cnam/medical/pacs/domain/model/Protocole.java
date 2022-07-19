@@ -4,8 +4,11 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 
-
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * Protocole is the model uses to store information about how is structured the
@@ -16,11 +19,20 @@ import io.quarkus.hibernate.orm.panache.PanacheEntity;
 @Entity
 public class Protocole extends PanacheEntity {
 
+    @NotNull
     public Technique technique;
+
+    @NotNull
     public Membre membre;
+
+    @NotNull
     public Type type;
+
+    @NotNull
     public Injection injection;
-    public Date date= new Date();
+
+    @NotNull
+    public Date date = new Date();
 
     public enum Technique {
         SCANNER, RADIO, MEDECINE_NUCLEAIRE, ECHOGRAPHIE

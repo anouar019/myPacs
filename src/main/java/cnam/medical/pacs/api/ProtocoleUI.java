@@ -8,6 +8,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -33,6 +34,10 @@ public class ProtocoleUI {
     @Inject
     ProtocoleRepo myRepo;
 
+    
+    /** 
+     * @return List<Protocole>
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Protocole> getProtocoles() {
@@ -43,6 +48,11 @@ public class ProtocoleUI {
     }
 
 
+    
+    /** 
+     * @param protocole
+     * @return Response
+     */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -56,6 +66,43 @@ public class ProtocoleUI {
     }
 
 
+
+    
+    /** 
+     * @param id
+     * @param protocole
+     * @return Response
+     */
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/{id}")
+    @Transactional
+    public Response updateProtocole(@PathParam("id") Long id, Protocole protocole){
+
+        LOGGER.info("Update Protocole id: "+id);
+        Protocole tempProtocole= myRepo.findById(id);
+        tempProtocole.date=protocole.date;
+        tempProtocole.injection=protocole.injection;
+        tempProtocole.membre=protocole.membre;
+        tempProtocole.technique=protocole.technique;
+        tempProtocole.type=protocole.type;
+
+
+        tempProtocole.persist();
+
+        return Response.status(Status.OK).entity(tempProtocole).build();
+
+
+    }
+
+
+
+    
+    /** 
+     * @param id
+     * @return Response
+     */
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id}")
@@ -71,6 +118,11 @@ public class ProtocoleUI {
     }
 
 
+    
+    /** 
+     * @param id
+     * @return Response
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/id/{id}")
@@ -84,6 +136,11 @@ public class ProtocoleUI {
     }
 
 
+    
+    /** 
+     * @param technique
+     * @return List<Protocole>
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/technique/{technique}")
@@ -96,6 +153,11 @@ public class ProtocoleUI {
     }
 
 
+    
+    /** 
+     * @param membre
+     * @return List<Protocole>
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/membre/{membre}")
@@ -106,6 +168,11 @@ public class ProtocoleUI {
 
     }
 
+    
+    /** 
+     * @param type
+     * @return List<Protocole>
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/type/{type}")
@@ -117,6 +184,11 @@ public class ProtocoleUI {
     }
 
 
+    
+    /** 
+     * @param injection
+     * @return List<Protocole>
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/injection/{injection}")

@@ -102,6 +102,62 @@ public class PatientTest {
         }
 
         @Test
+        public void testPutPatient() {
+
+                // VERIFICATION
+                given()
+                                .when().get("/patient")
+                                .then()
+                                .statusCode(200)
+                                .body("$.size()", is(3),
+                                                "[0].lastName", is("Boufenara"),
+                                                "[0].firstName", is("Anouar"),
+                                                "[0].birth", is("1985-12-20"),
+                                                "[0].sex", is("MALE"),
+                                                "[1].lastName", is("testFemale"),
+                                                "[1].firstName", is("testFemale"),
+                                                "[1].birth", is("1985-12-20"),
+                                                "[1].sex", is("FEMALE"),
+                                                "[2].lastName", is("testMale"),
+                                                "[2].firstName", is("testMale"),
+                                                "[2].birth", is("2005-12-20"),
+                                                "[2].sex", is("MALE")
+
+                                );
+
+                // PUT
+                given()
+                                .body("{\"id\": " + myLong
+                                                + " , \"lastName\": \"testUpdated\", \"firstName\": \"testUpdated\", \"birth\": \"1985-12-21\", \"sex\": \"FEMALE\"}")
+                                .header("Content-Type", "application/json")
+                                .when()
+                                .put("/patient/" + myLong)
+                                .then()
+                                .statusCode(200);
+
+                // VERIFICATION2
+                given()
+                                .when().get("/patient")
+                                .then()
+                                .statusCode(200)
+                                .body("$.size()", is(3),
+                                                "[0].lastName", is("testUpdated"),
+                                                "[0].firstName", is("testUpdated"),
+                                                "[0].birth", is("1985-12-21"),
+                                                "[0].sex", is("FEMALE"),
+                                                "[1].lastName", is("testFemale"),
+                                                "[1].firstName", is("testFemale"),
+                                                "[1].birth", is("1985-12-20"),
+                                                "[1].sex", is("FEMALE"),
+                                                "[2].lastName", is("testMale"),
+                                                "[2].firstName", is("testMale"),
+                                                "[2].birth", is("2005-12-20"),
+                                                "[2].sex", is("MALE")
+
+                                );
+        }
+
+        @Test
         public void testFindPatientByBirth() {
 
                 // VERIFICATION1
